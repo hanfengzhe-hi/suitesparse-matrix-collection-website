@@ -57,18 +57,29 @@ end
 # See https://github.com/cucumber/cucumber-rails/blob/master/features/choose_javascript_database_strategy.feature
 Cucumber::Rails::Database.javascript_strategy = :truncation
 
-require 'capybara/poltergeist'
-Capybara.javascript_driver = :poltergeist
-# Capybara.javascript_driver = :webkit
-# Capybara::Webkit.configure do |config|
-#     config.allow_url("ajax.googleapis.com")
-#     config.allow_url("fonts.googleapis.com")
-#     config.allow_url("www.cise.ufl.edu")
+require "selenium/webdriver"
+require 'webdrivers'
+
+# Capybara.register_driver :headless_chrome do |app|
+# 	options = Selenium::WebDriver::Chrome::Options.new
+# 	options.add_argument('--headless')
+# 	options.add_argument('--disable-gpu')
+# 	options.add_argument('--window-size=1280,800')
+
+# 	Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
 # end
 
-Capybara.register_driver :poltergeist do |app|
-  Capybara::Poltergeist::Driver.new(app, {:js_errors => false})
+# Capybara.default_driver = :headless_chrome
+# Capybara.javascript_driver = :headless_chrome
+
+Capybara.register_driver :firefox_headless do |app|
+  options = ::Selenium::WebDriver::Firefox::Options.new
+  options.args << '--headless'
+
+  Capybara::Selenium::Driver.new(app, browser: :firefox, options: options)
 end
+
+Capybara.javascript_driver = :firefox_headless
 
 Before do
 	page.driver.restart if defined?(page.driver.restart)
